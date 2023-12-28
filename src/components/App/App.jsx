@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {toast, Toaster } from 'react-hot-toast';
+import { toast, Toaster } from 'react-hot-toast';
 import { Loader } from 'components/Loader/Loader';
 import { StyledApp } from './App.styled';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
@@ -31,14 +31,14 @@ export class App extends Component {
       return;
     }
     if (query === this.state.query) {
-      toast('Please enter another search criteria'); // користувач клікнув шукати, не змінивши пошуковий запит 
+      toast('Please enter another search criteria'); // користувач клікнув шукати, не змінивши пошуковий запит
       return;
     }
 
     this.setState({
       query: query,
       page: 1,
-      images: [],  // це щоб не висіли фото від попереднього запиту
+      images: [], // це щоб не висіли фото від попереднього запиту
     });
   };
 
@@ -46,25 +46,24 @@ export class App extends Component {
     if (!query) {
       return;
     }
-    this.setState({isError: false});
-    this.setState({ isLoading: true });
+    this.setState({ isError: false, isLoading: true });
 
     try {
       const images = await ImageServise.getImages(query, page);
 
       if (images.hits.length === 0) {
         this.setState({ isEmpty: true });
-        toast('Sorry, no images were found')
+        toast('Sorry, no images were found');
       }
 
-        this.setState(prevState => ({
+      this.setState(prevState => ({
         images: [...prevState.images, ...images.hits],
         isShown: prevState.page < Math.ceil(images.totalHits / 12),
         isEmpty: false,
       }));
     } catch (error) {
       this.setState({ isError: true });
-      toast.error('Something went wrong, please try again')
+      toast.error('Something went wrong, please try again');
       console.log(error);
     } finally {
       this.setState({ isLoading: false });
@@ -76,14 +75,16 @@ export class App extends Component {
   };
 
   render() {
-    const { images, isEmpty, isLoading, isShown} = this.state;
+    const { images, isEmpty, isLoading, isShown } = this.state;
     return (
       <StyledApp>
         <Searchbar onSubmit={this.onSubmit} />
-        <Toaster position="top-right"/>
-        {isLoading && <Loader/>}
+        <Toaster position="top-right" />
+        {isLoading && <Loader />}
         {!isEmpty && <ImageGallery images={images} />}
-        {isShown && !isLoading && <Button onClick={this.getPage}> Load more </Button>}
+        {isShown && !isLoading && (
+          <Button onClick={this.getPage}> Load more </Button>
+        )}
       </StyledApp>
     );
   }
